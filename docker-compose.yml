@@ -40,19 +40,19 @@ services:
   #   networks:
   #     - default
 
-  php:
+  php81:
     build:
       context: ./services/php
       args:
-        PHP_VERSION: php:${PHP_VERSION}-fpm-alpine
+        PHP_VERSION: php:${PHP81_VERSION}-fpm-alpine
         CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-        PHP_EXTENSIONS: ${PHP_EXTENSIONS}
+        PHP_EXTENSIONS: ${PHP81_EXTENSIONS}
         TZ: "$TZ"
     volumes:
       - ${SOURCE_DIR}:/www/:rw
-      - ${PHP_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
-      - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
-      - ${PHP_LOG_DIR}:/var/log/php
+      - ${PHP81_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP81_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP81_LOG_DIR}:/var/log/php
     restart: always
     cap_add:
       - SYS_PTRACE
@@ -139,14 +139,14 @@ services:
     networks:
       - default
 
-  memcached:
-    image: memcached:${MEMCACHED_VERSION}
-    ports:
-      - "${MEMCACHED_HOST_PORT}:11211"
-    environment:
-       MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
-    networks:
-      - default
+  # memcached:
+  #   image: memcached:${MEMCACHED_VERSION}
+  #   ports:
+  #     - "${MEMCACHED_HOST_PORT}:11211"
+  #   environment:
+  #      MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
+  #   networks:
+  #     - default
 
   rabbitmq:
     image: rabbitmq:${RABBITMQ_VERSION}
@@ -210,48 +210,48 @@ services:
     networks:
       - default
 
-  # elasticsearch:
-  #   build:
-  #     context: ./services/elasticsearch
-  #     args:
-  #       ELASTICSEARCH_VERSION: ${ELASTICSEARCH_VERSION}
-  #       ELASTICSEARCH_PLUGINS: ${ELASTICSEARCH_PLUGINS}
-  #   environment:
-  #     - TZ=$TZ
-  #     - discovery.type=single-node
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #   volumes:
-  #     - ${ELASTICSEARCH_DATA_DIR}:/usr/share/elasticsearch/data
-  #     - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/elasticsearch.yml
-  #   hostname: elasticsearch
-  #   restart: always
-  #   ports:
-  #     - "${ELASTICSEARCH_HOST_PORT_C}:9200"
-  #     - "${ELASTICSEARCH_HOST_PORT_S}:9300"
+  elasticsearch:
+    build:
+      context: ./services/elasticsearch
+      args:
+        ELASTICSEARCH_VERSION: ${ELASTICSEARCH_VERSION}
+        ELASTICSEARCH_PLUGINS: ${ELASTICSEARCH_PLUGINS}
+    environment:
+      - TZ=$TZ
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ${ELASTICSEARCH_DATA_DIR}:/usr/share/elasticsearch/data
+      - ${ELASTICSEARCH_CONF_FILE}:/usr/share/elasticsearch/elasticsearch.yml
+    hostname: elasticsearch
+    restart: always
+    ports:
+      - "${ELASTICSEARCH_HOST_PORT_C}:9200"
+      - "${ELASTICSEARCH_HOST_PORT_S}:9300"
 
-  # kibana:
-  #   image: kibana:${KIBANA_VERSION}
-  #   environment:
-  #     TZ: "$TZ"
-  #     elasticsearch.hosts: http://elasticsearch:9200
-  #   hostname: kibana
-  #   depends_on:
-  #     - elasticsearch
-  #   restart: always
-  #   ports:
-  #     - "${KIBANA_HOST}:5601"
+  kibana:
+    image: kibana:${KIBANA_VERSION}
+    environment:
+      TZ: "$TZ"
+      elasticsearch.hosts: http://elasticsearch:9200
+    hostname: kibana
+    depends_on:
+      - elasticsearch
+    restart: always
+    ports:
+      - "${KIBANA_HOST}:5601"
 
-  # logstash:
-  #   image: logstash:${LOGSTASH_VERSION}
-  #   hostname: logstash
-  #   restart: always
-  #   depends_on:
-  #     - elasticsearch
-  #   environment:
-  #     TZ: "$TZ"
-  #   ports:
-  #     - "${LOGSTASH_HOST_PORT_C}:9600"
-  #     - "${LOGSTASH_HOST_PORT_S}:5044"
+  logstash:
+    image: logstash:${LOGSTASH_VERSION}
+    hostname: logstash
+    restart: always
+    depends_on:
+      - elasticsearch
+    environment:
+      TZ: "$TZ"
+    ports:
+      - "${LOGSTASH_HOST_PORT_C}:9600"
+      - "${LOGSTASH_HOST_PORT_S}:5044"
 
 volumes:
   esdata:
