@@ -32,7 +32,7 @@ RUN apk --no-cache add tzdata \
 RUN apk add gnu-libiconv --no-cache --repository http://${CONTAINER_PACKAGE_URL}/alpine/edge/community/ --allow-untrusted
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
-COPY ./extensions/composer /usr/bin/composer
+COPY ./extensions/composer.phar /usr/bin/composer
 RUN chmod +x /usr/bin/composer;\
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/;
 

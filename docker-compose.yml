@@ -42,7 +42,7 @@ services:
 
   php81:
     build:
-      context: ./services/php
+      context: ./services/php81
       args:
         PHP_VERSION: php:${PHP81_VERSION}-fpm-alpine
         CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
@@ -58,20 +58,39 @@ services:
       - SYS_PTRACE
     networks:
       - default
-
-  php70:
+  
+  php74:
     build:
-      context: ./services/php70
+      context: ./services/php74
       args:
-        PHP_VERSION: php:${PHP70_VERSION}-fpm-alpine
+        PHP_VERSION: php:${PHP74_VERSION}-fpm-alpine
         CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-        PHP_EXTENSIONS: ${PHP70_EXTENSIONS}
+        PHP_EXTENSIONS: ${PHP74_EXTENSIONS}
         TZ: "$TZ"
     volumes:
       - ${SOURCE_DIR}:/www/:rw
-      - ${PHP70_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
-      - ${PHP70_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
-      - ${PHP70_LOG_DIR}:/var/log/php
+      - ${PHP74_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP74_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP74_LOG_DIR}:/var/log/php
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default 
+
+  php56:
+    build:
+      context: ./services/php56
+      args:
+        PHP_VERSION: php:${PHP56_VERSION}-fpm-alpine
+        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+        PHP_EXTENSIONS: ${PHP56_EXTENSIONS}
+        TZ: "$TZ"
+    volumes:
+      - ${SOURCE_DIR}:/www/:rw
+      - ${PHP56_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP56_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP56_LOG_DIR}:/var/log/php
     restart: always
     cap_add:
       - SYS_PTRACE
@@ -112,19 +131,19 @@ services:
       MYSQL_ROOT_PASSWORD: "${MYSQL5_ROOT_PASSWORD}"
       TZ: "$TZ"
 
-  # mysql:
-  #   image: mysql:${MYSQL_VERSION}
-  #   ports:
-  #     - "${MYSQL_HOST_PORT}:3306"
-  #   volumes:
-  #     - ${MYSQL_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
-  #     - ${MYSQL_DATA_DIR}:/var/lib/mysql/:rw
-  #   restart: always
-  #   networks:
-  #     - default
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-  #     TZ: "$TZ"
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    ports:
+      - "${MYSQL_HOST_PORT}:3305"
+    volumes:
+      - ${MYSQL_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
+      - ${MYSQL_DATA_DIR}:/var/lib/mysql/:rw
+    restart: always
+    networks:
+      - default
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      TZ: "$TZ"
 
   redis:
     image: redis:${REDIS_VERSION}
