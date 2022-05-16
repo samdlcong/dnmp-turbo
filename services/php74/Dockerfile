@@ -32,8 +32,12 @@ RUN apk --no-cache add tzdata \
 RUN apk add gnu-libiconv --no-cache --repository http://${CONTAINER_PACKAGE_URL}/alpine/edge/community/ --allow-untrusted
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
+
+
 COPY ./extensions/composer.phar /usr/bin/composer
 RUN chmod +x /usr/bin/composer;\
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/;
 
+COPY ./extensions/swoole_loader74.so /usr/local/lib/php/extensions/no-debug-non-zts-20190902/swoole_loader74.so
+RUN docker-php-ext-enable swoole_loader74.so
 WORKDIR /www
